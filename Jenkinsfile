@@ -21,7 +21,7 @@ pipeline {
 
     stage('Build Images') {
       steps {
-        sh 'docker compose build --no-cache'
+        sh 'docker-compose build --no-cache'
       }
     }
 
@@ -36,15 +36,15 @@ pipeline {
 
     stage('Deploy (Compose Up)') {
       steps {
-        sh 'docker compose up -d'
+        sh 'docker-compose up -d'
       }
     }
   }
 
   post {
     always {
-      sh 'docker compose ps || true'
-      sh 'docker compose logs --no-color || true'
+      sh 'docker-compose ps || true'
+      sh 'docker-compose logs --no-color || true'
     }
   }
 }
