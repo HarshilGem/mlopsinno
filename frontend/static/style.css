@@ -1,0 +1,9 @@
+body{font-family:Segoe UI,Roboto,Arial;margin:0;background:#f7f9fc;color:#222}
+.wrap{max-width:520px;margin:40px auto;padding:24px;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+h1{margin:0 0 18px;font-size:20px}
+.row{margin-bottom:12px}
+label{display:flex;justify-content:space-between;align-items:center}
+input[type=number]{width:48%;padding:8px;border:1px solid #ddd;border-radius:4px}
+button{padding:10px 16px;background:#0078d4;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.result{margin-top:12px;padding:10px;background:#f1f8ff;border:1px solid #dbeffd;border-radius:6px}
+.note{margin-top:10px;color:#666;font-size:13px}

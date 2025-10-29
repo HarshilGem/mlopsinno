@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RF Jamming Scenario Predictor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <h1>RF Jamming Scenario Predictor</h1>
+    <form id="predictForm">
+      <div class="row"><label>Time<input name="Time" type="number" step="any" value="27.8"></label></div>
+      <div class="row"><label>SNR<input name="SNR" type="number" step="any" value="-22.69"></label></div>
+      <div class="row"><label>Speed<input name="Speed" type="number" step="any" value="25.47"></label></div>
+      <div class="row"><label>RSSI<input name="RSSI" type="number" step="any" value="-61.8"></label></div>
+      <div class="row"><label>PDR<input name="PDR" type="number" step="any" value="1.53e-102"></label></div>
+      <div class="row"><label>Relative Speed<input name="Relative_Speed" type="number" step="any" value="25.47"></label></div>
+      <div class="row"><button type="submit">Predict</button></div>
+    </form>
+    <div id="result" class="result"></div>
+    <div class="note">The form posts JSON to <code>/predict</code> and displays the response.</div>
+  </div>
+
+<script>
+document.getElementById('predictForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const form = e.target;
+  const keys = ['Time','SNR','Speed','RSSI','PDR','Relative_Speed'];
+  const payload = {};
+  keys.forEach(k => payload[k] = form.elements[k].value);
+
+  const resultEl = document.getElementById('result');
+  resultEl.textContent = 'Predicting...';
+
+  try{
+    const resp = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await resp.json();
+    if(resp.ok){
+      resultEl.textContent = 'Predicted Scenario: ' + data.prediction;
+    } else {
+      resultEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+    }
+  } catch(err){
+    resultEl.textContent = 'Request failed: ' + err;
+  }
+});
+</script>
+</body>
+</html>

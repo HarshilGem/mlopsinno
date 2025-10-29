@@ -1,0 +1,49 @@
+# Python caches and virtual envs
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+.Python
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Local databases and state
+*.sqlite3
+*.db
+instance/
+
+# Build and packaging
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# Docker artifacts
+**/.dockerignore
+docker-*.log
+
+# Data (keep sample datasets small if needed)
+Dataset_1.csv
+
+# Nginx bundle in workspace
+nginx-*/
+
+# NOTE: Model artifacts are required for container builds; DO NOT ignore
+# rf_jamming_model.pkl
+# scaler.pkl
+
+
