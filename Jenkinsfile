@@ -14,14 +14,14 @@ pipeline {
 
     stage('Set up Docker Buildx') {
       steps {
-        sh 'docker version || true'
-        sh 'docker buildx create --use || true'
+        sh 'sg docker -c "docker version" || true'
+        sh 'sg docker -c "docker buildx create --use" || true'
       }
     }
 
     stage('Build Images') {
       steps {
-        sh 'docker-compose build --no-cache'
+        sh 'sg docker -c "docker-compose build --no-cache"'
       }
     }
 
@@ -36,15 +36,15 @@ pipeline {
 
     stage('Deploy (Compose Up)') {
       steps {
-        sh 'docker-compose up -d'
+        sh 'sg docker -c "docker-compose up -d"'
       }
     }
   }
 
   post {
     always {
-      sh 'docker-compose ps || true'
-      sh 'docker-compose logs --no-color || true'
+      sh 'sg docker -c "docker-compose ps" || true'
+      sh 'sg docker -c "docker-compose logs --no-color" || true'
     }
   }
 }
