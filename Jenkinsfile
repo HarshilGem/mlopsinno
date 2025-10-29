@@ -14,14 +14,14 @@ pipeline {
 
     stage('Set up Docker Buildx') {
       steps {
-        powershell 'docker version | Out-Host; exit 0'
-        powershell 'docker buildx create --use | Out-Host; exit 0'
+        sh 'docker version || true'
+        sh 'docker buildx create --use || true'
       }
     }
 
     stage('Build Images') {
       steps {
-        powershell 'docker compose build --no-cache'
+        sh 'docker compose build --no-cache'
       }
     }
 
@@ -36,15 +36,15 @@ pipeline {
 
     stage('Deploy (Compose Up)') {
       steps {
-        powershell 'docker compose up -d'
+        sh 'docker compose up -d'
       }
     }
   }
 
   post {
     always {
-      powershell 'docker compose ps';
-      powershell 'docker compose logs --no-color'
+      sh 'docker compose ps || true'
+      sh 'docker compose logs --no-color || true'
     }
   }
 }
