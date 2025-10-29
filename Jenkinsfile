@@ -15,11 +15,11 @@ pipeline {
     stage('Set up Docker Buildx') {
       steps {
         sh '''
-          bash -c 'newgrp docker << ENDG
-            docker version
+          bash -c "newgrp docker <<'EOF'
+            docker version || true
             docker buildx create --use || true
-          ENDG
-          ' || true
+          EOF
+          " || true
         '''
       }
     }
@@ -27,11 +27,10 @@ pipeline {
     stage('Build Images') {
       steps {
         sh '''
-          bash -c 'newgrp docker << ENDG
-            cd ${WORKSPACE}
-            docker-compose build --no-cache
-          ENDG
-          '
+          bash -c "newgrp docker <<'EOF'
+            cd '${WORKSPACE}' && docker-compose build --no-cache
+          EOF
+          "
         '''
       }
     }
@@ -48,11 +47,10 @@ pipeline {
     stage('Deploy (Compose Up)') {
       steps {
         sh '''
-          bash -c 'newgrp docker << ENDG
-            cd ${WORKSPACE}
-            docker-compose up -d
-          ENDG
-          '
+          bash -c "newgrp docker <<'EOF'
+            cd '${WORKSPACE}' && docker-compose up -d
+          EOF
+          "
         '''
       }
     }
@@ -61,12 +59,11 @@ pipeline {
   post {
     always {
       sh '''
-        bash -c 'newgrp docker << ENDG
-          cd ${WORKSPACE}
-          docker-compose ps || true
-          docker-compose logs --no-color || true
-        ENDG
-        ' || true
+        bash -c "newgrp docker <<'EOF'
+          cd '${WORKSPACE}' && docker-compose ps || true
+          cd '${WORKSPACE}' && docker-compose logs --no-color || true
+        EOF
+        " || true
       '''
     }
   }
