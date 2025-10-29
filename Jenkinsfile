@@ -14,14 +14,25 @@ pipeline {
 
     stage('Set up Docker Buildx') {
       steps {
-        sh 'echo "docker version" | newgrp docker || true'
-        sh 'echo "docker buildx create --use" | newgrp docker || true'
+        sh '''
+          bash -c 'newgrp docker << ENDG
+            docker version
+            docker buildx create --use || true
+          ENDG
+          ' || true
+        '''
       }
     }
 
     stage('Build Images') {
       steps {
-        sh 'echo "docker-compose build --no-cache" | newgrp docker'
+        sh '''
+          bash -c 'newgrp docker << ENDG
+            cd ${WORKSPACE}
+            docker-compose build --no-cache
+          ENDG
+          '
+        '''
       }
     }
 
@@ -36,15 +47,27 @@ pipeline {
 
     stage('Deploy (Compose Up)') {
       steps {
-        sh 'echo "docker-compose up -d" | newgrp docker'
+        sh '''
+          bash -c 'newgrp docker << ENDG
+            cd ${WORKSPACE}
+            docker-compose up -d
+          ENDG
+          '
+        '''
       }
     }
   }
 
   post {
     always {
-      sh 'echo "docker-compose ps" | newgrp docker || true'
-      sh 'echo "docker-compose logs --no-color" | newgrp docker || true'
+      sh '''
+        bash -c 'newgrp docker << ENDG
+          cd ${WORKSPACE}
+          docker-compose ps || true
+          docker-compose logs --no-color || true
+        ENDG
+        ' || true
+      '''
     }
   }
 }
