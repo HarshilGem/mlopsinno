@@ -14,22 +14,14 @@ pipeline {
 
     stage('Set up Docker Buildx') {
       steps {
-        sh '''
-          newgrp docker <<'DOCKER_EOF'
-            docker version || true
-            docker buildx create --use || true
-          DOCKER_EOF
-        '''
+        sh 'echo "docker version" | newgrp docker || true'
+        sh 'echo "docker buildx create --use" | newgrp docker || true'
       }
     }
 
     stage('Build Images') {
       steps {
-        sh '''
-          newgrp docker <<'DOCKER_EOF'
-            docker-compose build --no-cache
-          DOCKER_EOF
-        '''
+        sh 'echo "docker-compose build --no-cache" | newgrp docker'
       }
     }
 
@@ -44,23 +36,15 @@ pipeline {
 
     stage('Deploy (Compose Up)') {
       steps {
-        sh '''
-          newgrp docker <<'DOCKER_EOF'
-            docker-compose up -d
-          DOCKER_EOF
-        '''
+        sh 'echo "docker-compose up -d" | newgrp docker'
       }
     }
   }
 
   post {
     always {
-      sh '''
-        newgrp docker <<'DOCKER_EOF'
-          docker-compose ps || true
-          docker-compose logs --no-color || true
-        DOCKER_EOF
-      ''' || true
+      sh 'echo "docker-compose ps" | newgrp docker || true'
+      sh 'echo "docker-compose logs --no-color" | newgrp docker || true'
     }
   }
 }
