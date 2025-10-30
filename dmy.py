@@ -1,0 +1,1 @@
+import mlflow,os; print('tracking_uri=',mlflow.get_tracking_uri()); print('env=',os.environ.get('MLFLOW_TRACKING_URI')); print('get_experiment=', mlflow.get_experiment_by_name('rf_jamming'))

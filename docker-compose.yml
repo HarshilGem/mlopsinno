@@ -5,6 +5,12 @@ networks:
 volumes:
   backend_data:
     driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  mlflow_data:
+    driver: local
 
 services:
   backend:
@@ -14,6 +20,8 @@ services:
       dockerfile: backend/Dockerfile
     environment:
       - PORT=5001
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_EXPERIMENT=rf_jamming_docker
       - DATABASE_URL=sqlite:///rf_predictions.db
     volumes:
       - backend_data:/app/backend
@@ -29,6 +37,8 @@ services:
       dockerfile: frontend/Dockerfile
     environment:
       - PORT=5000
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_EXPERIMENT=rf_jamming_docker
       - DB_SERVICE_URL=http://backend:5001
     depends_on:
       - backend
@@ -36,5 +46,49 @@ services:
       - app_net
     ports:
       - "5000:5000"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    networks:
+      - app_net
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - app_net
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.12.1
+    container_name: mlflow
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow/mlflow.db
+      - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
+    volumes:
+      - ./mlflow_data:/mlflow
+    ports:
+      - "5002:5000"
+    networks:
+      - app_net
 
 
